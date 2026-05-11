@@ -1267,6 +1267,20 @@ Toronto Raptors,+8.5,04/29/2026</div>
                 behavior: 'smooth'
             });
         }
+
+        // Suppress extension-related messaging errors
+        if (window.chrome && window.chrome.runtime) {
+            window.chrome.runtime.onMessage.addListener(() => {
+                return false;
+            });
+        }
+
+        // Catch unhandled promise rejections from extensions
+        window.addEventListener('unhandledrejection', event => {
+            if (event.reason && event.reason.message && event.reason.message.includes('message channel closed')) {
+                event.preventDefault();
+            }
+        });
     </script>
 </body>
 </html>

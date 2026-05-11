@@ -9,7 +9,7 @@ app.use(express.static(__dirname));
 
 // Serve the main Jimmy app
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'jimmy-with-tabs.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Health check endpoint
