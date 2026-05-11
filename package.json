@@ -1,0 +1,24 @@
+{
+  "name": "jimmy-bet-checker",
+  "version": "1.0.0",
+  "description": "Jimmy - Your instant sports bet checker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "sports",
+    "betting",
+    "bet-checker",
+    "results"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

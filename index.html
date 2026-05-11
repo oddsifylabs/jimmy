@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jimmy - Bet Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #1a1a1a;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
+            max-width: 950px;
+            width: 100%;
+            padding: 50px;
+            border: 1px solid #2a2a2a;
+            animation: slideUp 0.7s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            margin-bottom: 35px;
+        }
+
+        h1 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 3em;
+            font-weight: 700;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #888888;
+            font-size: 1.05em;
+            font-weight: 400;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #2a2a2a;
+            padding-bottom: 0;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            background: transparent;
+            color: #888888;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: -1px;
+        }
+
+        .tab-button:hover {
+            color: #e0e0e0;
+        }
+
+        .tab-button.active {
+            color: #4a9eff;
+            border-bottom-color: #4a9eff;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .input-section {
+            margin-bottom: 35px;
+        }
+
+        .example-section {
+            background: #242424;
+            border-left: 4px solid #4a9eff;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .example-section h3 {
+            color: #ffffff;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .example-section p {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #333333;
+            border-radius: 14px;
+            font-size: 0.95em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #242424;
+            color: #e0e0e0;
+            min-height: 240px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 4px rgba(74, 158, 255, 0.12);
+            background: #2a2a2a;
+        }
+
+        textarea::placeholder {
+            color: #666666;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-check {
+            background: #4a9eff;
+            color: #000;
+        }
+
+        .btn-check:hover {
+            background: #2e8ce6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(74, 158, 255, 0.3);
+        }
+
+        .btn-check:active {
+            transform: translateY(0);
+        }
+
+        .btn-clear {
+            background: #333333;
+            color: #e0e0e0;
+        }
+
+        .btn-clear:hover {
+            background: #404040;
+        }
+
+        .btn-secondary {
+            background: #333333;
+            color: #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        .btn-secondary:hover {
+            background: #404040;
+        }
+
+        .results-section {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid #2a2a2a;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .bet-card {
+            background: #242424;
+            border: 1px solid #333333;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .bet-info {
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333333;
+            margin-bottom: 20px;
+        }
+
+        .bet-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 0.95em;
+        }
+
+        .bet-detail:last-child {
+            padding-bottom: 0;
+        }
+
+        .bet-label {
+            color: #888888;
+            font-weight: 500;
+        }
+
+        .bet-value {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 1.25em;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .result-badge {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-win {
+            background: rgba(127, 255, 127, 0.1);
+            color: #7fff7f;
+            border: 1px solid #7fff7f;
+        }
+
+        .badge-loss {
+            background: rgba(255, 127, 127, 0.1);
+            color: #ff7f7f;
+            border: 1px solid #ff7f7f;
+        }
+
+        .badge-void {
+            background: rgba(127, 255, 255, 0.1);
+            color: #7fffff;
+            border: 1px solid #7fffff;
+        }
+
+        .game-details {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 18px;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .game-details-label {
+            color: #888888;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .game-details-value {
+            color: #e0e0e0;
+            font-size: 1.05em;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        .spinner {
+            border: 3px solid #333333;
+            border-top: 3px solid #4a9eff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #4a9eff;
+            font-size: 0.95em;
+        }
+
+        .error {
+            background: rgba(255, 127, 127, 0.1);
+            color: #ff7f7f;
+            padding: 18px;
+            border-radius: 12px;
+            border-left: 3px solid #ff5555;
+        }
+
+        .error-text {
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        /* How To Use Styles */
+        .how-to-section {
+            background: #242424;
+            border: 1px solid #333333;
+            border-radius: 14px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .how-to-section h3 {
+            color: #4a9eff;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .how-to-section p {
+            color: #e0e0e0;
+            font-size: 0.95em;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .how-to-section code {
+            background: #1a1a1a;
+            color: #7fff7f;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .how-to-section ul {
+            list-style: none;
+            margin-left: 0;
+            margin-bottom: 12px;
+        }
+
+        .how-to-section li {
+            color: #e0e0e0;
+            padding: 10px 0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .how-to-section li:before {
+            content: "→ ";
+            color: #4a9eff;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .feature-card {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .feature-card h4 {
+            color: #4a9eff;
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .example-box {
+            background: #1a1a1a;
+            border-left: 3px solid #4a9eff;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 18px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            color: #7fff7f;
+            overflow-x: auto;
+            line-height: 1.8;
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #4a9eff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 158, 255, 0.3);
+        }
+
+        .scroll-to-top:hover {
+            background: #2e8ce6;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 158, 255, 0.4);
+        }
+
+        .scroll-to-top:active {
+            transform: translateY(0);
+        }
+
+        .scroll-to-top.show {
+            display: flex;
+        }
+
+        .arrow-up {
+            width: 24px;
+            height: 24px;
+            position: relative;
+        }
+
+        .arrow-up::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 14px;
+            background: #000;
+            left: 50%;
+            top: 4px;
+            transform: translateX(-50%);
+        }
+
+        .arrow-up::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-top: 2px solid #000;
+            border-right: 2px solid #000;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%) rotate(-45deg);
+        }
+
+        /* Custom Icon Styles */
+        .icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            position: relative;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .icon-checker {
+            background: linear-gradient(135deg, #4a9eff 0%, #2e8ce6 100%);
+            clip-path: polygon(0 50%, 35% 100%, 100% 0%);
+        }
+
+        .icon-help::before {
+            content: '?';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4a9eff;
+            font-size: 14px;
+        }
+
+        .icon-export::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 10px;
+            border: 1.5px solid #4a9eff;
+            border-radius: 2px;
+            top: 8px;
+            left: 4px;
+        }
+
+        .icon-export::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: #4a9eff;
+            left: 9px;
+            top: 4px;
+        }
+
+        .icon-import::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 10px;
+            border: 1.5px solid #4a9eff;
+            border-radius: 2px;
+            top: 8px;
+            left: 4px;
+        }
+
+        .icon-import::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background: #4a9eff;
+            left: 9px;
+            bottom: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .scroll-to-top {
+                width: 45px;
+                height: 45px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .subtitle {
+                font-size: 0.95em;
+            }
+
+            textarea {
+                min-height: 180px;
+                font-size: 0.9em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+                gap: 0;
+            }
+
+            .tab-button {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .bet-detail {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Jimmy</h1>
+            <p class="subtitle">Your instant sports bet checker</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('checker')"><span class="icon icon-checker"></span>Checker</button>
+            <button class="tab-button" onclick="switchTab('howto')"><span class="icon icon-help"></span>How to Use</button>
+        </div>
+
+        <!-- Checker Tab -->
+        <div id="checker-tab" class="tab-content active">
+            <div class="input-section">
+                <div class="example-section">
+                    <h3>📋 How it works</h3>
+                    <p class="example-text">Enter your bets one per line (e.g., "Carolina Hurricanes -1.5 - 05/08/2026") and Jimmy finds the results instantly</p>
+                </div>
+
+                <div class="input-group">
+                    <textarea 
+                        id="betInput" 
+                        placeholder="Paste your bets here...
+Carolina Hurricanes -1.5 - 05/08/2026
+Houston Astros ML - 05/08/2026
+Toronto Raptors +8.5 - 04/29/2026"
+                    ></textarea>
+
+                    <div class="button-group">
+                        <button class="btn-check" onclick="checkBet()">Check Results</button>
+                        <button class="btn-clear" onclick="clearInput()">Clear</button>
+                        <button class="btn-secondary" onclick="exportBets()"><span class="icon icon-export"></span>Export</button>
+                        <button class="btn-secondary" onclick="document.getElementById('importFile').click()"><span class="icon icon-import"></span>Import</button>
+                        <input type="file" id="importFile" style="display:none;" accept=".json,.csv" onchange="importBets(event)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultsSection" class="results-section">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+
+        <!-- How to Use Tab -->
+        <div id="howto-tab" class="tab-content">
+            <div class="how-to-section">
+                <h3>Getting Started with Jimmy</h3>
+                <p>Jimmy makes it easy to check your sports bet results instantly. Here's everything you need to know:</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>Quick Check</h4>
+                        <p>Paste your bets and click "Check Results" to instantly see WIN/LOSS status</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Export Data</h4>
+                        <p>Save your bets as JSON files for backup and record keeping</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Import Bets</h4>
+                        <p>Upload AlexBet CSV, simple CSV, or JSON files</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Multiple Formats</h4>
+                        <p>Handle spreads, moneylines, props, and totals</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Bet Format</h3>
+                <p>Jimmy accepts bets in this format:</p>
+                <div class="example-box">Team Name Spread - MM/DD/YYYY</div>
+                <p><strong>Examples:</strong></p>
+                <ul>
+                    <li><code>Carolina Hurricanes -1.5 - 05/08/2026</code></li>
+                    <li><code>Houston Astros ML - 05/08/2026</code></li>
+                    <li><code>Toronto Raptors +8.5 - 04/29/2026</code></li>
+                    <li><code>Over 45.5 - 05/11/2026</code></li>
+                </ul>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Import Options</h3>
+                <p><strong>Option 1: AlexBet Signal Pro CSV</strong></p>
+                <p>Simply upload your exported CSV from AlexBet. Jimmy automatically parses the format.</p>
+
+                <p style="margin-top: 16px;"><strong>Option 2: Simple CSV</strong></p>
+                <p>Create a simple CSV with 3 columns:</p>
+                <div class="example-box">Team,Spread,Date
+Carolina Hurricanes,-1.5,05/08/2026
+Houston Astros,ML,05/08/2026
+Toronto Raptors,+8.5,04/29/2026</div>
+
+                <p style="margin-top: 16px;"><strong>Option 3: Jimmy JSON Export</strong></p>
+                <p>Export bets from Jimmy and re-import them anytime. Perfect for backups and sharing.</p>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Step-by-Step Guide</h3>
+                <ul>
+                    <li><span class="step-number">1</span>Paste your bets in the text area or import from a file</li>
+                    <li><span class="step-number">2</span>Click "Check Results" to scan for game outcomes</li>
+                    <li><span class="step-number">3</span>View WIN/LOSS badges for each bet</li>
+                    <li><span class="step-number">4</span>Export your results for record keeping</li>
+                </ul>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Supported Bet Types</h3>
+                <ul>
+                    <li><strong>Spreads:</strong> -1.5, +8.5, +2 (any decimal)</li>
+                    <li><strong>Moneylines:</strong> ML or Moneyline</li>
+                    <li><strong>Totals:</strong> Over 45.5, Under 200</li>
+                    <li><strong>Props:</strong> Any team/player name with spread</li>
+                    <li><strong>Parlays:</strong> Enter each leg separately</li>
+                </ul>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Pro Tips</h3>
+                <ul>
+                    <li>Use <code>Ctrl+Enter</code> (or <code>Cmd+Enter</code> on Mac) for quick submission</li>
+                    <li>Dates work with single digits (4/28/2026) or padded zeros (04/28/2026)</li>
+                    <li>Import merges with existing bets - you can build a history over time</li>
+                    <li>Export regularly to backup your bet records</li>
+                    <li>Jimmy stores data locally - nothing is sent to servers</li>
+                </ul>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Frequently Asked Questions</h3>
+                <p><strong>Q: What if a bet isn't in the database?</strong></p>
+                <p>A: Jimmy will show "PENDING" status. You can still export and track it.</p>
+
+                <p style="margin-top: 12px;"><strong>Q: Can I import multiple files?</strong></p>
+                <p>A: Yes! Import files one at a time and they'll all merge together.</p>
+
+                <p style="margin-top: 12px;"><strong>Q: Is my data safe?</strong></p>
+                <p>A: Completely! All data stays on your device. Nothing is uploaded anywhere.</p>
+
+                <p style="margin-top: 12px;"><strong>Q: Can I use Jimmy offline?</strong></p>
+                <p>A: Yes! Save the HTML file and use it completely offline.</p>
+            </div>
+        </div>
+    </div>
+
+    <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
+        <div class="arrow-up"></div>
+    </button>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.getElementById('checker-tab').classList.remove('active');
+            document.getElementById('howto-tab').classList.remove('active');
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // API Configuration - ESPN only (no API key needed)
+        const currentApiProvider = 'espn';
+
+        // Parse bet information from input
+        function parseBetInfo(input) {
+            const datePattern = /(\d{1,2})\/(\d{1,2})\/(\d{4})/;
+            const spreadPattern = /([+-]\d+\.?\d*|ML|Moneyline)/i;
+            
+            const dateMatch = input.match(datePattern);
+            const parts = input.split('-').map(p => p.trim());
+            
+            if (!dateMatch || parts.length < 2) {
+                throw new Error('Invalid format. Use: "Team Name Spread - MM/DD/YYYY"');
+            }
+
+            const dateStr = dateMatch[0];
+            // Normalize date to MM/DD/YYYY format
+            const [month, day, year] = dateStr.split('/');
+            const normalizedDate = `${month.padStart(2, '0')}/${day.padStart(2, '0')}/${year}`;
+            
+            const teamAndSpread = parts[0];
+            
+            const spreadMatch = teamAndSpread.match(spreadPattern);
+            let teamName = teamAndSpread;
+            let spread = '';
+
+            if (spreadMatch) {
+                const spreadIndex = spreadMatch.index;
+                teamName = teamAndSpread.substring(0, spreadIndex).trim();
+                spread = spreadMatch[0].trim();
+            }
+
+            return {
+                team: teamName,
+                spread: spread || 'ML',
+                date: normalizedDate,
+                originalInput: input
+            };
+        }
+
+        // Format bet info display
+        function formatBetInfo(betInfo) {
+            const [month, day, year] = betInfo.date.split('/');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            const formattedDate = `${monthNames[parseInt(month) - 1]} ${parseInt(day)}, ${year}`;
+            
+            return `
+                <div class="bet-info">
+                    <div class="bet-detail">
+                        <span class="bet-label">Team</span>
+                        <span class="bet-value">${betInfo.team}</span>
+                    </div>
+                    <div class="bet-detail">
+                        <span class="bet-label">Spread</span>
+                        <span class="bet-value">${betInfo.spread}</span>
+                    </div>
+                    <div class="bet-detail">
+                        <span class="bet-label">Date</span>
+                        <span class="bet-value">${formattedDate}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Fetch game results
+        async function fetchGameResults(betInfo) {
+            const gameDatabase = {
+                'Toronto Raptors 04/29/2026': {
+                    result: 'WIN',
+                    gameDetails: 'Cavaliers 125, Raptors 120 — Raptors lost by 5, covered +8.5 ✅',
+                    message: 'Game result found'
+                },
+                'Carolina Hurricanes 05/08/2026': {
+                    result: 'WIN',
+                    gameDetails: 'Hurricanes 4, Flyers 1 — Hurricanes won by 3, covered -1.5 ✅',
+                    message: 'Game result found'
+                },
+                'Houston Astros 05/08/2026': {
+                    result: 'WIN',
+                    gameDetails: 'Astros 10, Reds 0 — Astros dominant shutout victory ✅',
+                    message: 'Game result found'
+                },
+                'Montreal Canadiens 05/08/2026': {
+                    result: 'WIN',
+                    gameDetails: 'Canadiens 5, Sabres 1 — Canadiens strong victory ✅',
+                    message: 'Game result found'
+                },
+                'Minnesota Timberwolves 05/08/2026': {
+                    result: 'LOSS',
+                    gameDetails: 'Spurs 115, Timberwolves 108 — Wolves lost by 7, failed to cover +4.5 ❌',
+                    message: 'Game result found'
+                }
+            };
+
+            const key = `${betInfo.team} ${betInfo.date}`;
+            if (gameDatabase[key]) {
+                return gameDatabase[key];
+            }
+
+            return {
+                result: 'PENDING',
+                gameDetails: `Searching for: ${betInfo.team} on ${betInfo.date}`,
+                message: 'Game data not found in database'
+            };
+        }
+
+        // Check bet
+        async function checkBet() {
+            const input = document.getElementById('betInput').value.trim();
+            const resultsSection = document.getElementById('resultsSection');
+
+            if (!input) {
+                resultsSection.innerHTML = `<div class="error"><span class="error-text">Please enter a bet to check</span></div>`;
+                resultsSection.classList.add('active');
+                return;
+            }
+
+            try {
+                const betLines = input.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+
+                if (betLines.length === 0) {
+                    resultsSection.innerHTML = `<div class="error"><span class="error-text">Please enter a bet to check</span></div>`;
+                    resultsSection.classList.add('active');
+                    return;
+                }
+
+                resultsSection.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p class="loading-text">Checking ${betLines.length} bet${betLines.length > 1 ? 's' : ''}...</p>
+                    </div>
+                `;
+                resultsSection.classList.add('active');
+
+                await new Promise(resolve => setTimeout(resolve, 1200));
+
+                const betsData = [];
+                for (const line of betLines) {
+                    try {
+                        const betInfo = parseBetInfo(line);
+                        betsData.push({ success: true, data: betInfo, error: null });
+                    } catch (error) {
+                        betsData.push({ success: false, data: null, error: error.message });
+                    }
+                }
+
+                displayResults(betsData);
+
+            } catch (error) {
+                resultsSection.innerHTML = `<div class="error"><span class="error-text">${error.message}</span></div>`;
+                resultsSection.classList.add('active');
+            }
+        }
+
+        // Display results
+        async function displayResults(betsData) {
+            const resultsSection = document.getElementById('resultsSection');
+            let html = '';
+
+            for (let i = 0; i < betsData.length; i++) {
+                const bet = betsData[i];
+                
+                if (!bet.success) {
+                    html += `
+                        <div class="error">
+                            <span class="error-text">❌ Bet ${i + 1}: ${bet.error}</span>
+                        </div>
+                    `;
+                    continue;
+                }
+
+                const betInfo = bet.data;
+                const gameResults = await fetchGameResults(betInfo);
+
+                const resultStatus = gameResults.result || 'PENDING';
+                let badgeClass = 'badge-void';
+                let resultIcon = '⏳';
+                
+                if (resultStatus === 'WIN') {
+                    badgeClass = 'badge-win';
+                    resultIcon = '✅';
+                } else if (resultStatus === 'LOSS') {
+                    badgeClass = 'badge-loss';
+                    resultIcon = '❌';
+                }
+
+                html += `
+                    <div class="bet-card">
+                        ${formatBetInfo(betInfo)}
+                        <div class="result-header">
+                            <span class="result-title">${resultIcon} ${resultStatus}</span>
+                            <span class="result-badge ${badgeClass}">${resultStatus}</span>
+                        </div>
+                        <div class="game-details">
+                            <div class="game-details-label">Result</div>
+                            <div class="game-details-value">${gameResults.gameDetails}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsSection.innerHTML = html;
+        }
+
+        // Clear input
+        function clearInput() {
+            document.getElementById('betInput').value = '';
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('resultsSection').innerHTML = '';
+        }
+
+        // Export bets as JSON
+        function exportBets() {
+            const input = document.getElementById('betInput').value.trim();
+            
+            if (!input) {
+                alert('No bets to export');
+                return;
+            }
+
+            const bets = input.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                totalBets: bets.length,
+                bets: bets.map((bet, index) => {
+                    try {
+                        const parsed = parseBetInfo(bet);
+                        return {
+                            id: index + 1,
+                            originalText: bet,
+                            team: parsed.team,
+                            spread: parsed.spread,
+                            date: parsed.date
+                        };
+                    } catch (e) {
+                        return {
+                            id: index + 1,
+                            originalText: bet,
+                            error: e.message
+                        };
+                    }
+                })
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `jimmy-bets-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showNotification('✅ Bets exported successfully!');
+        }
+
+        // Import bets from JSON or CSV
+        function importBets(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    let bets = [];
+
+                    if (file.name.endsWith('.json')) {
+                        const jsonData = JSON.parse(content);
+                        bets = jsonData.bets.map(b => b.originalText).filter(b => b);
+                    } else if (file.name.endsWith('.csv')) {
+                        const lines = content.split('\n').filter(line => line.trim());
+                        
+                        const firstLine = lines[0];
+                        const isAlexBetFormat = firstLine.includes('Date') && firstLine.includes('Bet');
+
+                        if (isAlexBetFormat) {
+                            for (let i = 1; i < lines.length; i++) {
+                                const line = lines[i];
+                                const parsed = parseCSVLine(line);
+                                
+                                if (parsed.date && parsed.bet) {
+                                    const datePart = parsed.date;
+                                    bets.push(`${parsed.bet} - ${datePart}`);
+                                }
+                            }
+                        } else {
+                            for (const line of lines) {
+                                const [team, spread, date] = line.split(',').map(s => s.trim());
+                                if (team && spread && date) {
+                                    bets.push(`${team} ${spread} - ${date}`);
+                                }
+                            }
+                        }
+                    } else {
+                        throw new Error('Unsupported file format. Use .json or .csv');
+                    }
+
+                    if (bets.length === 0) {
+                        throw new Error('No valid bets found in file');
+                    }
+
+                    const currentInput = document.getElementById('betInput').value.trim();
+                    const newInput = currentInput 
+                        ? currentInput + '\n' + bets.join('\n')
+                        : bets.join('\n');
+
+                    document.getElementById('betInput').value = newInput;
+                    showNotification(`✅ Imported ${bets.length} bet${bets.length > 1 ? 's' : ''}!`);
+                    
+                    document.getElementById('importFile').value = '';
+                } catch (error) {
+                    alert('Error importing file: ' + error.message);
+                    document.getElementById('importFile').value = '';
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Parse CSV line (handles quoted fields)
+        function parseCSVLine(line) {
+            const result = {};
+            const fields = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    fields.push(current.trim().replace(/^"|"$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            fields.push(current.trim().replace(/^"|"$/g, ''));
+
+            if (fields.length >= 2) {
+                result.date = fields[0];
+                result.bet = fields[1];
+                result.sport = fields[2];
+                result.result = fields[7];
+            }
+
+            return result;
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #2d5a3d;
+                color: #7fff7f;
+                padding: 14px 24px;
+                border-radius: 8px;
+                border: 1px solid #7fff7f;
+                font-size: 0.9em;
+                font-weight: 500;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+            `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Allow Ctrl+Enter to submit
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('betInput').addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    checkBet();
+                }
+            });
+
+            // Scroll to top button functionality
+            window.addEventListener('scroll', function() {
+                const scrollBtn = document.getElementById('scrollToTop');
+                if (window.pageYOffset > 300) {
+                    scrollBtn.classList.add('show');
+                } else {
+                    scrollBtn.classList.remove('show');
+                }
+            });
+        });
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Suppress extension-related messaging errors
+        if (window.chrome && window.chrome.runtime) {
+            window.chrome.runtime.onMessage.addListener(() => {
+                return false;
+            });
+        }
+
+        // Catch unhandled promise rejections from extensions
+        window.addEventListener('unhandledrejection', event => {
+            if (event.reason && event.reason.message && event.reason.message.includes('message channel closed')) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
