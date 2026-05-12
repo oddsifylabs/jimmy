@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" fill="#0f0f0f" rx="8"/>
+
+  <!-- Lightning bolt -->
+  <path d="M32 8 L24 28 L32 28 L20 56 L44 32 L36 32 L44 8 Z" fill="#4a9eff" stroke="#2e8ce6" stroke-width="1"/>
+</svg>

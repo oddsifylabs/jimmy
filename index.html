@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jimmy - Bet Checker</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
             margin: 0;
@@ -597,6 +598,28 @@
             bottom: 4px;
         }
 
+        .icon-settings::before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #4a9eff;
+            border-radius: 2px;
+            top: 3px;
+            left: 3px;
+        }
+
+        .icon-settings::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #4a9eff;
+            border-radius: 50%;
+            top: 9px;
+            left: 9px;
+        }
+
         @media (max-width: 768px) {
             .scroll-to-top {
                 width: 45px;
@@ -669,6 +692,7 @@
 
         <div class="tabs">
             <button class="tab-button active" onclick="switchTab('checker')"><span class="icon icon-checker"></span>Checker</button>
+            <button class="tab-button" onclick="switchTab('settings')"><span class="icon icon-settings"></span>Settings</button>
             <button class="tab-button" onclick="switchTab('howto')"><span class="icon icon-help"></span>How to Use</button>
         </div>
 
@@ -701,6 +725,68 @@ Toronto Raptors +8.5 - 04/29/2026"
 
             <div id="resultsSection" class="results-section">
                 <!-- Results will be populated here -->
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings-tab" class="tab-content">
+            <div class="how-to-section">
+                <h3>The-Odds-API Key Configuration</h3>
+                <p>To use Jimmy with real sports data, you need a free API key from The-Odds-API. Your key is stored securely in your browser and never sent to our servers.</p>
+
+                <div style="margin-top: 24px;">
+                    <label for="apiKeyInput" style="display: block; color: #4a9eff; font-weight: 600; margin-bottom: 8px;">Your The-Odds-API Key</label>
+                    <input
+                        type="password"
+                        id="apiKeyInput"
+                        placeholder="Paste your API key here..."
+                        style="width: 100%; padding: 12px; background: #242424; color: #e0e0e0; border: 1px solid #333333; border-radius: 8px; font-family: 'Courier New', monospace; margin-bottom: 12px;"
+                    >
+                    <div style="color: #888888; font-size: 0.9em; margin-bottom: 20px;">
+                        <p>Your API key is stored only in your browser's session memory and cleared when you close the browser.</p>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                        <button class="btn-check" onclick="saveApiKey()" style="flex: 1;">Save API Key</button>
+                        <button class="btn-secondary" onclick="testApiKey()" style="flex: 1;">Test Connection</button>
+                    </div>
+
+                    <div id="apiStatus" style="display: none; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                        <!-- Status message will appear here -->
+                    </div>
+
+                    <div style="background: #242424; border-left: 4px solid #4a9eff; padding: 16px; border-radius: 8px;">
+                        <h4 style="color: #4a9eff; margin-bottom: 12px;">How to Get Your Free API Key:</h4>
+                        <ol style="color: #e0e0e0; line-height: 1.8; padding-left: 20px;">
+                            <li>Go to <a href="https://the-odds-api.com" target="_blank" style="color: #4a9eff; text-decoration: underline;">the-odds-api.com</a></li>
+                            <li>Sign up for a free account (takes 1 minute)</li>
+                            <li>Go to your Dashboard</li>
+                            <li>Copy your API key from the Account section</li>
+                            <li>Paste it here and click "Save API Key"</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Free Tier Details</h3>
+                <ul>
+                    <li><strong>500 requests/month:</strong> More than enough for personal use</li>
+                    <li><strong>Real-time data:</strong> Access to live sports scores and results</li>
+                    <li><strong>Multiple sports:</strong> NBA, NFL, MLB, NHL, and more</li>
+                    <li><strong>No credit card:</strong> Free tier requires no payment method</li>
+                </ul>
+            </div>
+
+            <div class="how-to-section">
+                <h3>Privacy & Security</h3>
+                <ul>
+                    <li><strong>Local Storage:</strong> Your API key is stored only in your browser's session</li>
+                    <li><strong>HTTPS Only:</strong> All API requests use secure HTTPS connections</li>
+                    <li><strong>No Logging:</strong> Your key is never logged or stored on servers</li>
+                    <li><strong>Session Based:</strong> Key is automatically cleared when you close the browser</li>
+                    <li><strong>Your Control:</strong> You can revoke your key anytime on The-Odds-API dashboard</li>
+                </ul>
             </div>
         </div>
 
@@ -813,10 +899,88 @@ Toronto Raptors,+8.5,04/29/2026</div>
     </button>
 
     <script>
+        // API Key Management
+        function getApiKey() {
+            return sessionStorage.getItem('claude_api_key') || '';
+        }
+
+        function saveApiKey() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim();
+            if (!apiKey) {
+                showApiStatus('error', 'Please enter an API key');
+                return;
+            }
+
+            if (apiKey.length < 10) {
+                showApiStatus('error', 'API key seems too short. Please check and try again.');
+                return;
+            }
+
+            sessionStorage.setItem('claude_api_key', apiKey);
+            showApiStatus('success', '✅ API key saved successfully! Stored in session memory.');
+            document.getElementById('apiKeyInput').value = '';
+        }
+
+        function testApiKey() {
+            const apiKey = document.getElementById('apiKeyInput').value.trim() || getApiKey();
+
+            if (!apiKey) {
+                showApiStatus('error', 'Please enter an API key first');
+                return;
+            }
+
+            showApiStatus('loading', 'Testing API key...');
+
+            fetch('/api/check-game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    team: 'Los Angeles Lakers',
+                    spread: 'ML',
+                    date: '5/11/2026',
+                    apiKey: apiKey
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    showApiStatus('success', '✅ API key is valid! Connection successful.');
+                    if (apiKey && apiKey !== getApiKey()) {
+                        sessionStorage.setItem('claude_api_key', apiKey);
+                    }
+                } else {
+                    showApiStatus('error', `❌ Error: ${data.error || 'Unknown error'}`);
+                }
+            })
+            .catch(err => showApiStatus('error', `❌ Connection failed: ${err.message}`));
+        }
+
+        function showApiStatus(type, message) {
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.style.display = 'block';
+
+            if (type === 'success') {
+                statusDiv.style.background = 'rgba(127, 255, 127, 0.1)';
+                statusDiv.style.color = '#7fff7f';
+                statusDiv.style.border = '1px solid #7fff7f';
+            } else if (type === 'error') {
+                statusDiv.style.background = 'rgba(255, 127, 127, 0.1)';
+                statusDiv.style.color = '#ff7f7f';
+                statusDiv.style.border = '1px solid #ff7f7f';
+            } else if (type === 'loading') {
+                statusDiv.style.background = 'rgba(74, 158, 255, 0.1)';
+                statusDiv.style.color = '#4a9eff';
+                statusDiv.style.border = '1px solid #4a9eff';
+            }
+
+            statusDiv.textContent = message;
+        }
+
         // Tab switching
         function switchTab(tabName) {
             // Hide all tabs
             document.getElementById('checker-tab').classList.remove('active');
+            document.getElementById('settings-tab').classList.remove('active');
             document.getElementById('howto-tab').classList.remove('active');
 
             // Remove active class from all buttons
@@ -826,7 +990,7 @@ Toronto Raptors,+8.5,04/29/2026</div>
             document.getElementById(tabName + '-tab').classList.add('active');
 
             // Add active class to clicked button
-            event.target.classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
         // API Configuration - ESPN only (no API key needed)
@@ -895,46 +1059,45 @@ Toronto Raptors,+8.5,04/29/2026</div>
             `;
         }
 
-        // Fetch game results
+        // Fetch game results from The-Odds-API via backend
         async function fetchGameResults(betInfo) {
-            const gameDatabase = {
-                'Toronto Raptors 04/29/2026': {
-                    result: 'WIN',
-                    gameDetails: 'Cavaliers 125, Raptors 120 — Raptors lost by 5, covered +8.5 ✅',
-                    message: 'Game result found'
-                },
-                'Carolina Hurricanes 05/08/2026': {
-                    result: 'WIN',
-                    gameDetails: 'Hurricanes 4, Flyers 1 — Hurricanes won by 3, covered -1.5 ✅',
-                    message: 'Game result found'
-                },
-                'Houston Astros 05/08/2026': {
-                    result: 'WIN',
-                    gameDetails: 'Astros 10, Reds 0 — Astros dominant shutout victory ✅',
-                    message: 'Game result found'
-                },
-                'Montreal Canadiens 05/08/2026': {
-                    result: 'WIN',
-                    gameDetails: 'Canadiens 5, Sabres 1 — Canadiens strong victory ✅',
-                    message: 'Game result found'
-                },
-                'Minnesota Timberwolves 05/08/2026': {
-                    result: 'LOSS',
-                    gameDetails: 'Spurs 115, Timberwolves 108 — Wolves lost by 7, failed to cover +4.5 ❌',
-                    message: 'Game result found'
+            const apiKey = getApiKey();
+
+            try {
+                const response = await fetch('/api/check-game', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        team: betInfo.team,
+                        spread: betInfo.spread,
+                        date: betInfo.date,
+                        apiKey: apiKey
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    return {
+                        result: 'ERROR',
+                        gameDetails: data.error || 'Failed to fetch game result',
+                        message: 'API Error'
+                    };
                 }
-            };
 
-            const key = `${betInfo.team} ${betInfo.date}`;
-            if (gameDatabase[key]) {
-                return gameDatabase[key];
+                const result = data.result;
+                return {
+                    result: result.status,
+                    gameDetails: result.score,
+                    message: result.details || 'Game result from The-Odds-API'
+                };
+            } catch (error) {
+                return {
+                    result: 'ERROR',
+                    gameDetails: error.message,
+                    message: 'Connection error'
+                };
             }
-
-            return {
-                result: 'PENDING',
-                gameDetails: `Searching for: ${betInfo.team} on ${betInfo.date}`,
-                message: 'Game data not found in database'
-            };
         }
 
         // Check bet
@@ -944,6 +1107,13 @@ Toronto Raptors,+8.5,04/29/2026</div>
 
             if (!input) {
                 resultsSection.innerHTML = `<div class="error"><span class="error-text">Please enter a bet to check</span></div>`;
+                resultsSection.classList.add('active');
+                return;
+            }
+
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                resultsSection.innerHTML = `<div class="error"><span class="error-text">⚠️ API key not configured. Please go to Settings tab and add your The-Odds-API key.</span></div>`;
                 resultsSection.classList.add('active');
                 return;
             }
@@ -1010,13 +1180,16 @@ Toronto Raptors,+8.5,04/29/2026</div>
                 const resultStatus = gameResults.result || 'PENDING';
                 let badgeClass = 'badge-void';
                 let resultIcon = '⏳';
-                
+
                 if (resultStatus === 'WIN') {
                     badgeClass = 'badge-win';
                     resultIcon = '✅';
                 } else if (resultStatus === 'LOSS') {
                     badgeClass = 'badge-loss';
                     resultIcon = '❌';
+                } else if (resultStatus === 'ERROR') {
+                    badgeClass = 'badge-loss';
+                    resultIcon = '⚠️';
                 }
 
                 html += `
